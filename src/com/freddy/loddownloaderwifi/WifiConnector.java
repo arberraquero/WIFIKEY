@@ -66,17 +66,34 @@ public class WifiConnector extends AndroidNonvisibleComponent {
           try {
             connectivityManager.bindProcessToNetwork(network);
             requestPending = false;
-            form.runOnUiThread(() -> Connected(ssid));
+            form.runOnUiThread(new Runnable() {
+              @Override public void run() {
+                Connected(ssid);
+              }
+            });
           } catch (Exception e) {
-            form.runOnUiThread(() -> Error("Conectado, pero no se pudo seleccionar la red: " + e.getMessage()));
+            final String errorMessage = "Conectado, pero no se pudo seleccionar la red: " + e.getMessage();
+            form.runOnUiThread(new Runnable() {
+              @Override public void run() {
+                Error(errorMessage);
+              }
+            });
           }
         }
         @Override public void onUnavailable() {
           requestPending = false;
-          form.runOnUiThread(() -> ConnectionFailed("El usuario canceló la solicitud o la red no está disponible."));
+          form.runOnUiThread(new Runnable() {
+            @Override public void run() {
+              ConnectionFailed("El usuario canceló la solicitud o la red no está disponible.");
+            }
+          });
         }
         @Override public void onLost(Network network) {
-          form.runOnUiThread(() -> Disconnected());
+          form.runOnUiThread(new Runnable() {
+            @Override public void run() {
+              Disconnected();
+            }
+          });
         }
       };
       requestPending = true;
